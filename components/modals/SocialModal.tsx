@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Share2, Loader2, Globe, Github, Linkedin, Twitter, Mail, Youtube, Instagram, Phone } from "lucide-react";
+import { X, Share2, Loader2, Globe, Github, Linkedin, Twitter, Mail, Youtube, Instagram, Phone, BookOpen } from "lucide-react";
 import { SocialLink } from "@/types/portfolio";
 import { useToast } from "@/components/ui/ToastContext";
 
@@ -12,15 +12,24 @@ interface SocialModalProps {
   onSave: (data: Partial<SocialLink>) => Promise<void> | void;
 }
 
+function SubstackIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+      <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z" />
+    </svg>
+  );
+}
+
 const AVAILABLE_ICONS = [
   { id: "linkedin", name: "LinkedIn", icon: Linkedin },
+  { id: "substack", name: "Substack", icon: SubstackIcon },
   { id: "github", name: "GitHub", icon: Github },
   { id: "twitter", name: "X (Twitter)", icon: Twitter },
   { id: "mail", name: "Email", icon: Mail },
-  { id: "globe", name: "Website / Other", icon: Globe },
+  { id: "globe", name: "Website", icon: Globe },
   { id: "youtube", name: "YouTube", icon: Youtube },
   { id: "instagram", name: "Instagram", icon: Instagram },
-  { id: "phone", name: "Phone / Contact", icon: Phone },
+  { id: "phone", name: "Phone", icon: Phone },
 ];
 
 export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProps) {
@@ -91,7 +100,7 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
                 {social ? "Edit Social Link" : "Add Social Account"}
               </h3>
               <p className="text-xs text-zinc-400">
-                Configure your public network and contact links
+                Configure public network and writing links
               </p>
             </div>
           </div>
@@ -115,8 +124,13 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
               onChange={(e) => {
                 setPlatform(e.target.value);
                 if (!label) setLabel(e.target.value);
+                if (e.target.value.toLowerCase().includes("substack")) {
+                  setIcon("substack");
+                } else if (e.target.value.toLowerCase().includes("linkedin")) {
+                  setIcon("linkedin");
+                }
               }}
-              placeholder="LinkedIn / GitHub / Medium / Substack"
+              placeholder="LinkedIn / Substack / GitHub"
               className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500"
             />
           </div>
@@ -129,7 +143,7 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="LinkedIn Profile"
+              placeholder="LinkedIn / Substack Newsletter"
               className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500"
             />
           </div>
@@ -143,7 +157,7 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
               required
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://linkedin.com/in/... or mailto:..."
+              placeholder="https://... or mailto:..."
               className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-zinc-500 font-mono text-xs"
             />
           </div>
@@ -152,7 +166,7 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
             <label className="block text-xs font-mono uppercase tracking-wider text-zinc-400 mb-2">
               Select Icon
             </label>
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               {AVAILABLE_ICONS.map((item) => {
                 const IconComponent = item.icon;
                 const isSelected = icon === item.id;
@@ -161,14 +175,14 @@ export function SocialModal({ isOpen, social, onClose, onSave }: SocialModalProp
                     key={item.id}
                     type="button"
                     onClick={() => setIcon(item.id)}
-                    className={`flex flex-col items-center gap-1.5 p-2.5 rounded-lg border text-xs transition-colors ${
+                    className={`flex items-center gap-2 p-2 rounded-lg border text-xs transition-colors ${
                       isSelected
                         ? "border-emerald-500 bg-emerald-500/10 text-emerald-300"
                         : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700"
                     }`}
                   >
-                    <IconComponent className="w-4 h-4" />
-                    <span className="text-[10px] truncate max-w-full">{item.name}</span>
+                    <IconComponent className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{item.name}</span>
                   </button>
                 );
               })}

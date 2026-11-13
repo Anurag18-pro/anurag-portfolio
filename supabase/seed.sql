@@ -23,22 +23,23 @@ INSERT INTO public.profile (
     '00000000-0000-0000-0000-000000000001',
     'Anurag Mishra',
     'MBA Candidate | Data Analytics, Strategy & Product Builder',
-    'MBA candidate focused on business strategy, data analytics with Python, entrepreneurship, and building scalable full-stack digital products. Passionate about leveraging data-driven insights and modern web architecture to solve complex problems.',
+    'MBA candidate focused on business strategy, data analytics with Python, entrepreneurship, and building scalable full-stack digital products. Passionate about leveraging quantitative insights and modern software architecture to solve high-impact business problems.',
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
     'Greater Noida, India',
-    'anuragmishra.mgmt@gmail.com',
+    'anuragmishra.mail@proton.me',
     true,
-    '#'
+    '/resume.pdf'
 );
 
 -- ------------------------------------------------------------------------------
 -- 2. SOCIAL ACCOUNTS
 -- ------------------------------------------------------------------------------
 INSERT INTO public.socials (platform, label, url, icon, display_order, is_active) VALUES
-('LinkedIn', 'LinkedIn', 'https://linkedin.com/in/anuragmishra', 'linkedin', 1, true),
-('GitHub', 'GitHub', 'https://github.com', 'github', 2, true),
-('X (Twitter)', 'X', 'https://x.com', 'twitter', 3, true),
-('Email', 'Email', 'mailto:anuragmishra.mgmt@gmail.com', 'mail', 4, true);
+('LinkedIn', 'LinkedIn', 'https://www.linkedin.com/in/anurag-mishramba/', 'linkedin', 1, true),
+('Substack', 'Substack', 'https://substack.com/@anuragmishraa', 'bookmark', 2, true),
+('GitHub', 'GitHub', 'https://github.com/Anurag18-pro', 'github', 3, true),
+('X (Twitter)', 'X', 'https://x.com', 'twitter', 4, true),
+('Email', 'Email', 'mailto:anuragmishra.mail@proton.me', 'mail', 5, true);
 
 -- ------------------------------------------------------------------------------
 -- 3. PROJECTS
@@ -56,10 +57,10 @@ INSERT INTO public.projects (
 ) VALUES
 (
     'CAGNEX',
-    'A high-performance, full-stack software application engineered and deployed on Vercel backed by Supabase. Built to automate and streamline data workflows, featuring real-time state synchronization, secure role-based access control, and an ultra-responsive minimalist user interface.',
-    ARRAY['Next.js 14', 'TypeScript', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'Vercel'],
+    'A full-stack software application engineered and deployed on Vercel backed by Supabase. Built to automate and streamline data workflows, featuring real-time state synchronization, secure role-based access control, and an ultra-responsive minimalist user interface.',
+    ARRAY['Next.js', 'TypeScript', 'Supabase', 'PostgreSQL', 'Tailwind CSS', 'Vercel'],
     'https://cagnex.vercel.app',
-    'https://github.com',
+    'https://github.com/Anurag18-pro/cagnex',
     'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80',
     true,
     '2025',
@@ -68,9 +69,9 @@ INSERT INTO public.projects (
 (
     'Python Financial & Market Analytics Suite',
     'End-to-end quantitative analytics engine analyzing macroeconomic indicators, asset volatility, and portfolio risk distributions using Pandas, NumPy, and statistical modeling.',
-    ARRAY['Python', 'Pandas', 'NumPy', 'Data Analytics', 'Matplotlib'],
-    '#',
-    'https://github.com',
+    ARRAY['Python', 'Pandas', 'NumPy', 'Data Analytics', 'Quantitative'],
+    'https://github.com/Anurag18-pro',
+    'https://github.com/Anurag18-pro',
     'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1000&q=80',
     false,
     '2026',
@@ -94,9 +95,9 @@ INSERT INTO public.education (
     '2025 – 2027',
     'Greater Noida, India',
     ARRAY[
-        'Specialization in Business Analytics, Strategic Management & Entrepreneurship',
-        'Active participant in corporate case studies, financial modeling, and strategy simulations',
-        'Core member organizing cross-campus analytical competitions & leadership summits'
+        'Focus on Business Analytics, Strategic Decision-Making & Entrepreneurship',
+        'Active engagement in corporate case studies, market research, and financial modeling',
+        'Organizing cross-campus analytical competitions & leadership summits'
     ],
     1
 );
@@ -163,7 +164,7 @@ INSERT INTO public.highlights (
     'Team Politia, Shri Ram College of Commerce (SRCC)',
     'Competitions',
     '2026',
-    'Analyzed public policy frameworks and formulated scalable socioeconomic strategies under national-level jury scrutiny.',
+    'Analyzed public policy frameworks and formulated scalable socioeconomic strategies under national jury review.',
     'National Competitor',
     'https://srcc.edu',
     1
@@ -173,7 +174,7 @@ INSERT INTO public.highlights (
     'Kirori Mal College (University of Delhi)',
     'Competitions',
     '2026',
-    'Simulated dynamic high-stakes trading floor scenarios, market volatility hedges, and tactical capital allocation.',
+    'Simulated high-stakes trading floor scenarios, market volatility hedges, and tactical capital allocation.',
     'Trader / Analyst',
     'https://kmc.du.ac.in',
     2
@@ -183,7 +184,7 @@ INSERT INTO public.highlights (
     'Unstop',
     'Competitions',
     '2025',
-    'Led multidisciplinary team in crafting end-to-end go-to-market strategy, operational redesign, and financial feasibility study.',
+    'Led multidisciplinary team in crafting end-to-end go-to-market strategy and financial feasibility model.',
     'Team Leader',
     'https://unstop.com',
     3
@@ -193,7 +194,7 @@ INSERT INTO public.highlights (
     'E-Cell, IIT (ISM) Dhanbad',
     'Competitions',
     '2025',
-    'Engineered tech-driven entrepreneurial prototype tackling supply chain transparency with real-time tracking.',
+    'Engineered prototype tackling supply chain transparency with real-time tracking.',
     'Innovator',
     'https://iitism.ac.in',
     4
@@ -203,7 +204,7 @@ INSERT INTO public.highlights (
     'Air India Group (via Internshala)',
     'Leadership',
     '2025',
-    'Selected to drive campus engagement, brand awareness, and aviation internship programs across university cohorts.',
+    'Selected to drive campus engagement, brand awareness, and aviation internship programs.',
     'Campus Ambassador',
     'https://internshala.com',
     5
@@ -213,7 +214,7 @@ INSERT INTO public.highlights (
     'Lok Bhavan, Lucknow',
     'Events',
     '2026',
-    'Engaged with state policymakers, prominent venture capitalists, and high-growth founders on fostering regional tech incubators.',
+    'Engaged with state policymakers, venture investors, and high-growth founders on regional startup acceleration.',
     'Delegate',
     '#',
     6
@@ -223,7 +224,7 @@ INSERT INTO public.highlights (
     'India Expo Centre, Greater Noida',
     'Events',
     '2025',
-    'Represented academic delegation exploring cross-border supply chains, MSME industrial automation, and export logistics.',
+    'Represented academic delegation exploring cross-border supply chains, industrial automation, and export logistics.',
     'Delegate',
     '#',
     7

@@ -8,6 +8,7 @@ import { ProjectsSection } from "@/components/ProjectsSection";
 import { EducationSection } from "@/components/EducationSection";
 import { CertificationsSection } from "@/components/CertificationsSection";
 import { HighlightsSection } from "@/components/HighlightsSection";
+import { ConnectSection } from "@/components/ConnectSection";
 import { Footer } from "@/components/Footer";
 
 // Modals
@@ -18,6 +19,7 @@ import { CertificationModal } from "@/components/modals/CertificationModal";
 import { HighlightModal } from "@/components/modals/HighlightModal";
 import { SocialModal } from "@/components/modals/SocialModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
+import { ResumeModal } from "@/components/modals/ResumeModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
 
 // Data & Supabase
@@ -64,6 +66,7 @@ export default function Home() {
   const [editingSocial, setEditingSocial] = useState<SocialLink | null>(null);
 
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [resumeModalOpen, setResumeModalOpen] = useState(false);
 
   // Delete modal state
   const [deleteModalState, setDeleteModalState] = useState<{
@@ -241,7 +244,6 @@ export default function Home() {
       }
     }
 
-    // Local state & persistence
     if (data.id && projects.some((p) => p.id === data.id)) {
       setProjects((prev) => {
         const updated = prev.map((p) =>
@@ -620,7 +622,7 @@ export default function Home() {
   };
 
   // ----------------------------------------------------------------------------
-  // PROFILE MUTATION
+  // PROFILE & RESUME MUTATION
   // ----------------------------------------------------------------------------
   const handleSaveProfile = async (data: Partial<Profile>) => {
     if (isSupabaseConfigured()) {
@@ -650,20 +652,27 @@ export default function Home() {
     success("Profile Updated", "Hero bio and contact details saved.");
   };
 
+  const handleSaveResume = async (url: string) => {
+    await handleSaveProfile({ resume_url: url });
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors">
       {/* Sticky Minimal Navbar */}
       <Navbar
         isAdmin={isAdmin}
+        resumeUrl={profile.resume_url}
         onOpenAuth={() => setAuthModalOpen(true)}
         onLogout={handleLogout}
         onOpenProfile={() => setProfileModalOpen(true)}
+        onOpenResumeModal={() => setResumeModalOpen(true)}
       />
 
       {/* Floating Admin Banner */}
       <AdminBar
         isAdmin={isAdmin}
         onOpenProfile={() => setProfileModalOpen(true)}
+        onOpenResumeModal={() => setResumeModalOpen(true)}
         onAddProject={() => {
           setEditingProject(null);
           setProjectModalOpen(true);
@@ -688,7 +697,7 @@ export default function Home() {
       />
 
       {/* Main Single-Page Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-4 pb-16">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-16">
         {/* 1. Hero Section */}
         <HeroSection
           profile={profile}
@@ -704,6 +713,7 @@ export default function Home() {
             setSocialModalOpen(true);
           }}
           onDeleteSocial={handleDeleteSocial}
+          onOpenResumeModal={() => setResumeModalOpen(true)}
         />
 
         {/* 2. Projects Section */}
@@ -764,6 +774,14 @@ export default function Home() {
             setHighlightModalOpen(true);
           }}
           onDeleteHighlight={handleDeleteHighlight}
+        />
+
+        {/* 6. Connect Section */}
+        <ConnectSection
+          profile={profile}
+          socials={socials}
+          onOpenResumeModal={() => setResumeModalOpen(true)}
+          isAdmin={isAdmin}
         />
       </main>
 
@@ -849,6 +867,14 @@ export default function Home() {
         profile={profile}
         onClose={() => setProfileModalOpen(false)}
         onSave={handleSaveProfile}
+      />
+
+      {/* Resume Modal */}
+      <ResumeModal
+        isOpen={resumeModalOpen}
+        currentResumeUrl={profile.resume_url}
+        onClose={() => setResumeModalOpen(false)}
+        onSave={handleSaveResume}
       />
 
       {/* Delete Confirmation Modal */}
