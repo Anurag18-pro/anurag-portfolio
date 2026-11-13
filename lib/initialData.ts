@@ -11,7 +11,7 @@ export const initialPortfolioData: PortfolioData = {
     email: "anuragmishra.mgmt@gmail.com",
     available_for_work: true,
     resume_url: "#",
-    created_at: new Date().toISOString(),
+    created_at: "2025-01-01T00:00:00.000Z",
   },
   socials: [
     {

@@ -80,9 +80,42 @@ export default function Home() {
 
   const { success, error: toastError, info } = useToast();
 
-  // 1. Fetch Supabase Data & Listen to Auth
+  // Helper to persist offline data to localStorage when Supabase is not yet configured
+  const saveLocal = (key: string, value: unknown) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+      // Ignore localStorage errors
+    }
+  };
+
+  // 1. Fetch Supabase Data (or load from localStorage when in demo mode)
   const fetchAllData = useCallback(async () => {
     if (!isSupabaseConfigured()) {
+      try {
+        const localProfile = localStorage.getItem("portfolio_profile");
+        if (localProfile) setProfile(JSON.parse(localProfile));
+
+        const localSocials = localStorage.getItem("portfolio_socials");
+        if (localSocials) setSocials(JSON.parse(localSocials));
+
+        const localProjects = localStorage.getItem("portfolio_projects");
+        if (localProjects) setProjects(JSON.parse(localProjects));
+
+        const localEdu = localStorage.getItem("portfolio_education");
+        if (localEdu) setEducation(JSON.parse(localEdu));
+
+        const localCerts = localStorage.getItem("portfolio_certifications");
+        if (localCerts) setCertifications(JSON.parse(localCerts));
+
+        const localHl = localStorage.getItem("portfolio_highlights");
+        if (localHl) setHighlights(JSON.parse(localHl));
+
+        const demoAdmin = localStorage.getItem("portfolio_demo_admin");
+        if (demoAdmin === "true") setIsAdmin(true);
+      } catch {
+        // Ignore
+      }
       return;
     }
 
@@ -178,6 +211,8 @@ export default function Home() {
     if (isSupabaseConfigured()) {
       const supabase = createClient();
       await supabase.auth.signOut();
+    } else {
+      localStorage.removeItem("portfolio_demo_admin");
     }
     setIsAdmin(false);
     info("Signed Out", "Admin mode deactivated.");
@@ -206,11 +241,15 @@ export default function Home() {
       }
     }
 
-    // Local state update
+    // Local state & persistence
     if (data.id && projects.some((p) => p.id === data.id)) {
-      setProjects((prev) =>
-        prev.map((p) => (p.id === data.id ? ({ ...p, ...data } as Project) : p))
-      );
+      setProjects((prev) => {
+        const updated = prev.map((p) =>
+          p.id === data.id ? ({ ...p, ...data } as Project) : p
+        );
+        saveLocal("portfolio_projects", updated);
+        return updated;
+      });
       success("Project Updated", `Saved changes to "${data.title}".`);
     } else {
       const newProj = {
@@ -226,7 +265,11 @@ export default function Home() {
         display_order: data.display_order || projects.length + 1,
       } as Project;
 
-      setProjects((prev) => [...prev, newProj]);
+      setProjects((prev) => {
+        const updated = [...prev, newProj];
+        saveLocal("portfolio_projects", updated);
+        return updated;
+      });
       success("Project Added", `Published "${newProj.title}" successfully.`);
     }
   };
@@ -248,7 +291,11 @@ export default function Home() {
             return;
           }
         }
-        setProjects((prev) => prev.filter((p) => p.id !== project.id));
+        setProjects((prev) => {
+          const updated = prev.filter((p) => p.id !== project.id);
+          saveLocal("portfolio_projects", updated);
+          return updated;
+        });
         success("Project Removed", `Deleted "${project.title}".`);
       },
     });
@@ -278,9 +325,13 @@ export default function Home() {
     }
 
     if (data.id && education.some((e) => e.id === data.id)) {
-      setEducation((prev) =>
-        prev.map((e) => (e.id === data.id ? ({ ...e, ...data } as Education) : e))
-      );
+      setEducation((prev) => {
+        const updated = prev.map((e) =>
+          e.id === data.id ? ({ ...e, ...data } as Education) : e
+        );
+        saveLocal("portfolio_education", updated);
+        return updated;
+      });
       success("Education Updated", `Updated ${data.degree}.`);
     } else {
       const newEdu = {
@@ -293,7 +344,11 @@ export default function Home() {
         display_order: data.display_order || education.length + 1,
       } as Education;
 
-      setEducation((prev) => [...prev, newEdu]);
+      setEducation((prev) => {
+        const updated = [...prev, newEdu];
+        saveLocal("portfolio_education", updated);
+        return updated;
+      });
       success("Education Added", `Added ${newEdu.institution}.`);
     }
   };
@@ -315,7 +370,11 @@ export default function Home() {
             return;
           }
         }
-        setEducation((prev) => prev.filter((e) => e.id !== item.id));
+        setEducation((prev) => {
+          const updated = prev.filter((e) => e.id !== item.id);
+          saveLocal("portfolio_education", updated);
+          return updated;
+        });
         success("Entry Deleted", "Removed education record.");
       },
     });
@@ -345,9 +404,13 @@ export default function Home() {
     }
 
     if (data.id && certifications.some((c) => c.id === data.id)) {
-      setCertifications((prev) =>
-        prev.map((c) => (c.id === data.id ? ({ ...c, ...data } as Certification) : c))
-      );
+      setCertifications((prev) => {
+        const updated = prev.map((c) =>
+          c.id === data.id ? ({ ...c, ...data } as Certification) : c
+        );
+        saveLocal("portfolio_certifications", updated);
+        return updated;
+      });
       success("Certification Updated", `Saved changes to "${data.title}".`);
     } else {
       const newCert = {
@@ -360,7 +423,11 @@ export default function Home() {
         display_order: data.display_order || certifications.length + 1,
       } as Certification;
 
-      setCertifications((prev) => [...prev, newCert]);
+      setCertifications((prev) => {
+        const updated = [...prev, newCert];
+        saveLocal("portfolio_certifications", updated);
+        return updated;
+      });
       success("Certification Added", `Added "${newCert.title}".`);
     }
   };
@@ -382,7 +449,11 @@ export default function Home() {
             return;
           }
         }
-        setCertifications((prev) => prev.filter((c) => c.id !== item.id));
+        setCertifications((prev) => {
+          const updated = prev.filter((c) => c.id !== item.id);
+          saveLocal("portfolio_certifications", updated);
+          return updated;
+        });
         success("Certificate Removed", `Deleted "${item.title}".`);
       },
     });
@@ -412,9 +483,13 @@ export default function Home() {
     }
 
     if (data.id && highlights.some((h) => h.id === data.id)) {
-      setHighlights((prev) =>
-        prev.map((h) => (h.id === data.id ? ({ ...h, ...data } as Highlight) : h))
-      );
+      setHighlights((prev) => {
+        const updated = prev.map((h) =>
+          h.id === data.id ? ({ ...h, ...data } as Highlight) : h
+        );
+        saveLocal("portfolio_highlights", updated);
+        return updated;
+      });
       success("Milestone Updated", `Updated "${data.title}".`);
     } else {
       const newHl = {
@@ -429,7 +504,11 @@ export default function Home() {
         display_order: data.display_order || highlights.length + 1,
       } as Highlight;
 
-      setHighlights((prev) => [...prev, newHl]);
+      setHighlights((prev) => {
+        const updated = [...prev, newHl];
+        saveLocal("portfolio_highlights", updated);
+        return updated;
+      });
       success("Milestone Added", `Added "${newHl.title}".`);
     }
   };
@@ -451,7 +530,11 @@ export default function Home() {
             return;
           }
         }
-        setHighlights((prev) => prev.filter((h) => h.id !== item.id));
+        setHighlights((prev) => {
+          const updated = prev.filter((h) => h.id !== item.id);
+          saveLocal("portfolio_highlights", updated);
+          return updated;
+        });
         success("Milestone Removed", `Deleted "${item.title}".`);
       },
     });
@@ -481,9 +564,13 @@ export default function Home() {
     }
 
     if (data.id && socials.some((s) => s.id === data.id)) {
-      setSocials((prev) =>
-        prev.map((s) => (s.id === data.id ? ({ ...s, ...data } as SocialLink) : s))
-      );
+      setSocials((prev) => {
+        const updated = prev.map((s) =>
+          s.id === data.id ? ({ ...s, ...data } as SocialLink) : s
+        );
+        saveLocal("portfolio_socials", updated);
+        return updated;
+      });
       success("Social Link Updated", `Saved ${data.platform}.`);
     } else {
       const newSocial = {
@@ -496,7 +583,11 @@ export default function Home() {
         is_active: true,
       } as SocialLink;
 
-      setSocials((prev) => [...prev, newSocial]);
+      setSocials((prev) => {
+        const updated = [...prev, newSocial];
+        saveLocal("portfolio_socials", updated);
+        return updated;
+      });
       success("Social Link Added", `Added ${newSocial.platform}.`);
     }
   };
@@ -518,7 +609,11 @@ export default function Home() {
             return;
           }
         }
-        setSocials((prev) => prev.filter((s) => s.id !== item.id));
+        setSocials((prev) => {
+          const updated = prev.filter((s) => s.id !== item.id);
+          saveLocal("portfolio_socials", updated);
+          return updated;
+        });
         success("Link Removed", `Deleted social connection.`);
       },
     });
@@ -547,7 +642,11 @@ export default function Home() {
       }
     }
 
-    setProfile((prev) => ({ ...prev, ...data } as Profile));
+    setProfile((prev) => {
+      const updated = { ...prev, ...data } as Profile;
+      saveLocal("portfolio_profile", updated);
+      return updated;
+    });
     success("Profile Updated", "Hero bio and contact details saved.");
   };
 
@@ -679,7 +778,14 @@ export default function Home() {
       <AuthModal
         isOpen={authModalOpen}
         onClose={() => setAuthModalOpen(false)}
-        onSuccess={() => setIsAdmin(true)}
+        onSuccess={() => {
+          setIsAdmin(true);
+          try {
+            localStorage.setItem("portfolio_demo_admin", "true");
+          } catch {
+            // Ignore
+          }
+        }}
       />
 
       {/* Project Modal */}
