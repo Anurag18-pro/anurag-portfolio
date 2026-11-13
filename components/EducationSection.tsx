@@ -43,7 +43,7 @@ export function EducationSection({
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {sortedEducation.map((item) => (
           <div
             key={item.id}
@@ -88,18 +88,14 @@ export function EducationSection({
               </div>
             </div>
 
-            {/* Highlights */}
-            {item.highlights && item.highlights.length > 0 && (
-              <ul className="mt-3 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400">
-                {item.highlights.map((highlight, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-zinc-400 dark:text-zinc-600 font-mono text-[10px] mt-0.5">
-                      —
-                    </span>
-                    <span className="leading-relaxed">{highlight}</span>
-                  </li>
-                ))}
-              </ul>
+            {/* Coursework */}
+            {item.coursework && (
+              <div className="mt-2.5 text-xs text-zinc-600 dark:text-zinc-400 font-sans">
+                <span className="font-mono text-[11px] text-zinc-400 font-medium">
+                  Coursework:{" "}
+                </span>
+                <span>{item.coursework}</span>
+              </div>
             )}
           </div>
         ))}

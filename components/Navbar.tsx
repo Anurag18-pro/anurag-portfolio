@@ -34,10 +34,11 @@ export function Navbar({
   }, []);
 
   const navLinks = [
+    { label: "Experience", href: "#experience" },
     { label: "Projects", href: "#projects" },
+    { label: "Skills", href: "#skills" },
     { label: "Education", href: "#education" },
     { label: "Certifications", href: "#certifications" },
-    { label: "Highlights", href: "#highlights" },
     { label: "Connect", href: "#connect" },
   ];
 

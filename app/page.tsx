@@ -4,7 +4,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { AdminBar } from "@/components/AdminBar";
 import { HeroSection } from "@/components/HeroSection";
+import { ExperienceSection } from "@/components/ExperienceSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
+import { SkillsSection } from "@/components/SkillsSection";
 import { EducationSection } from "@/components/EducationSection";
 import { CertificationsSection } from "@/components/CertificationsSection";
 import { HighlightsSection } from "@/components/HighlightsSection";
@@ -33,12 +35,16 @@ import {
   Education,
   Certification,
   Highlight,
+  Experience,
 } from "@/types/portfolio";
 
 export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [profile, setProfile] = useState<Profile>(initialPortfolioData.profile);
   const [socials, setSocials] = useState<SocialLink[]>(initialPortfolioData.socials);
+  const [experiences, setExperiences] = useState<Experience[]>(
+    initialPortfolioData.experiences || []
+  );
   const [projects, setProjects] = useState<Project[]>(initialPortfolioData.projects);
   const [education, setEducation] = useState<Education[]>(initialPortfolioData.education);
   const [certifications, setCertifications] = useState<Certification[]>(
@@ -101,6 +107,9 @@ export default function Home() {
 
         const localSocials = localStorage.getItem("portfolio_socials");
         if (localSocials) setSocials(JSON.parse(localSocials));
+
+        const localExp = localStorage.getItem("portfolio_experiences");
+        if (localExp) setExperiences(JSON.parse(localExp));
 
         const localProjects = localStorage.getItem("portfolio_projects");
         if (localProjects) setProjects(JSON.parse(localProjects));
@@ -716,7 +725,13 @@ export default function Home() {
           onOpenResumeModal={() => setResumeModalOpen(true)}
         />
 
-        {/* 2. Projects Section */}
+        {/* 2. Professional Experience */}
+        <ExperienceSection
+          experiences={experiences}
+          isAdmin={isAdmin}
+        />
+
+        {/* 3. Projects Section */}
         <ProjectsSection
           projects={projects}
           isAdmin={isAdmin}
@@ -731,7 +746,10 @@ export default function Home() {
           onDeleteProject={handleDeleteProject}
         />
 
-        {/* 3. Education Section */}
+        {/* 4. Skills & Competencies */}
+        <SkillsSection />
+
+        {/* 5. Education Section */}
         <EducationSection
           education={education}
           isAdmin={isAdmin}

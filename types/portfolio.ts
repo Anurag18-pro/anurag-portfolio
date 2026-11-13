@@ -6,6 +6,7 @@ export interface Profile {
   avatar_url?: string | null;
   location: string;
   email: string;
+  phone?: string | null;
   available_for_work: boolean;
   resume_url?: string | null;
   created_at?: string;
@@ -20,6 +21,18 @@ export interface SocialLink {
   icon: string;
   display_order: number;
   is_active: boolean;
+  created_at?: string;
+}
+
+export interface Experience {
+  id: string;
+  role: string;
+  company: string;
+  location?: string | null;
+  duration: string;
+  description: string[];
+  skills?: string[];
+  display_order: number;
   created_at?: string;
 }
 
@@ -43,6 +56,7 @@ export interface Education {
   degree: string;
   duration: string;
   location?: string | null;
+  coursework?: string;
   highlights: string[];
   display_order: number;
   created_at?: string;
@@ -77,6 +91,7 @@ export interface Highlight {
 export interface PortfolioData {
   profile: Profile;
   socials: SocialLink[];
+  experiences: Experience[];
   projects: Project[];
   education: Education[];
   certifications: Certification[];
