@@ -117,7 +117,7 @@ export function ConnectSection({ profile, socials, onOpenResumeModal, isAdmin }:
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
-              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-blue-400 font-bold placeholder:text-muted/60 placeholder:font-normal focus:outline-none focus:border-gold-500/60 transition-colors"
             />
           </div>
           <div>
@@ -127,7 +127,7 @@ export function ConnectSection({ profile, socials, onOpenResumeModal, isAdmin }:
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-blue-400 font-bold placeholder:text-muted/60 placeholder:font-normal focus:outline-none focus:border-gold-500/60 transition-colors"
             />
           </div>
           <div>
@@ -137,7 +137,7 @@ export function ConnectSection({ profile, socials, onOpenResumeModal, isAdmin }:
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
               placeholder="What would you like to discuss?"
-              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors resize-none"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-blue-400 font-bold placeholder:text-muted/60 placeholder:font-normal focus:outline-none focus:border-gold-500/60 transition-colors resize-none"
             />
           </div>
           <button
