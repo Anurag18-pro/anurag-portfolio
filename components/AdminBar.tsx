@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { Plus, LogOut, Edit3, Database, FileText } from "lucide-react";
+import { Plus, LogOut, Edit3, Database, FileText, KeyRound } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 interface AdminBarProps {
   isAdmin: boolean;
   onOpenProfile: () => void;
   onOpenResumeModal: () => void;
+  onOpenPasswordModal?: () => void;
   onAddProject: () => void;
   onAddEducation: () => void;
   onAddCertification: () => void;
@@ -20,6 +21,7 @@ export function AdminBar({
   isAdmin,
   onOpenProfile,
   onOpenResumeModal,
+  onOpenPasswordModal,
   onAddProject,
   onAddEducation,
   onAddCertification,
@@ -68,6 +70,16 @@ export function AdminBar({
             <FileText className="w-3 h-3" />
             <span>Resume</span>
           </button>
+          {onOpenPasswordModal && (
+            <button
+              onClick={onOpenPasswordModal}
+              className="flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition-colors"
+              title="Set or update admin master password"
+            >
+              <KeyRound className="w-3 h-3 text-zinc-400" />
+              <span>Password</span>
+            </button>
+          )}
           <button
             onClick={onAddProject}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 transition-colors"

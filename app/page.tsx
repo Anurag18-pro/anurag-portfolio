@@ -14,7 +14,7 @@ import { ConnectSection } from "@/components/ConnectSection";
 import { Footer } from "@/components/Footer";
 
 // Modals
-import { AuthModal } from "@/components/modals/AuthModal";
+import { AuthModal, AuthMode } from "@/components/modals/AuthModal";
 import { ProjectModal } from "@/components/modals/ProjectModal";
 import { EducationModal } from "@/components/modals/EducationModal";
 import { CertificationModal } from "@/components/modals/CertificationModal";
@@ -56,6 +56,7 @@ export default function Home() {
 
   // Modals visibility states
   const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<AuthMode>("signIn");
   const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
@@ -214,12 +215,22 @@ export default function Home() {
   useEffect(() => {
     fetchAllData();
 
+    // Check if recovery link was opened
+    if (typeof window !== "undefined" && window.location.hash.includes("type=recovery")) {
+      setAuthModalMode("updatePassword");
+      setAuthModalOpen(true);
+    }
+
     if (isSupabaseConfigured()) {
       const supabase = createClient();
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
+      } = supabase.auth.onAuthStateChange((event, session) => {
         setIsAdmin(Boolean(session));
+        if (event === "PASSWORD_RECOVERY") {
+          setAuthModalMode("updatePassword");
+          setAuthModalOpen(true);
+        }
       });
 
       return () => {
@@ -680,7 +691,10 @@ export default function Home() {
       <Navbar
         isAdmin={isAdmin}
         resumeUrl={profile.resume_url}
-        onOpenAuth={() => setAuthModalOpen(true)}
+        onOpenAuth={() => {
+          setAuthModalMode("signIn");
+          setAuthModalOpen(true);
+        }}
         onLogout={handleLogout}
         onOpenProfile={() => setProfileModalOpen(true)}
         onOpenResumeModal={() => setResumeModalOpen(true)}
@@ -691,6 +705,10 @@ export default function Home() {
         isAdmin={isAdmin}
         onOpenProfile={() => setProfileModalOpen(true)}
         onOpenResumeModal={() => setResumeModalOpen(true)}
+        onOpenPasswordModal={() => {
+          setAuthModalMode("updatePassword");
+          setAuthModalOpen(true);
+        }}
         onAddProject={() => {
           setEditingProject(null);
           setProjectModalOpen(true);
@@ -813,7 +831,13 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <Footer isAdmin={isAdmin} onOpenAuth={() => setAuthModalOpen(true)} />
+      <Footer
+        isAdmin={isAdmin}
+        onOpenAuth={() => {
+          setAuthModalMode("signIn");
+          setAuthModalOpen(true);
+        }}
+      />
 
       {/* ========================================================================= */}
       {/* MODALS */}
@@ -822,6 +846,7 @@ export default function Home() {
       {/* Auth Modal */}
       <AuthModal
         isOpen={authModalOpen}
+        initialMode={authModalMode}
         onClose={() => setAuthModalOpen(false)}
         onSuccess={() => {
           setIsAdmin(true);
