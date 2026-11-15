@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { Plus, Edit2, Trash2, ExternalLink } from "lucide-react";
 import { Highlight } from "@/types/portfolio";
-import { Plus, Edit2, Trash2, ArrowUpRight } from "lucide-react";
 
 interface HighlightsSectionProps {
   highlights: Highlight[];
@@ -19,125 +19,99 @@ export function HighlightsSection({
   onEditHighlight,
   onDeleteHighlight,
 }: HighlightsSectionProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-
-  const categories = ["All", "Competitions", "Leadership", "Events"];
-
-  const filteredHighlights = highlights
-    .filter((h) => {
-      if (selectedCategory === "All") return true;
-      return h.category.toLowerCase() === selectedCategory.toLowerCase();
-    })
-    .sort((a, b) => a.display_order - b.display_order);
+  const sorted = [...highlights].sort((a, b) => a.display_order - b.display_order);
 
   return (
-    <section id="highlights" className="py-12 border-b border-zinc-200/80 dark:border-zinc-800/60">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Competitions, Leadership & Milestones
-          </h2>
-        </div>
+    <section id="highlights" className="px-10 md:px-16 py-24 border-t border-navy-400">
+      <div className="flex items-center gap-3 mb-10">
+        <span className="font-serif italic text-gold-500/70 text-[13px]">07</span>
+        <div className="h-px w-6 bg-navy-400" />
+        <span className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted">Milestones</span>
+      </div>
 
+      <div className="flex items-start justify-between mb-12">
+        <h2 className="font-serif text-3xl md:text-4xl font-light text-white leading-tight">
+          Recognition &amp;{" "}
+          <span className="font-serif italic text-gold-500">milestones</span>
+        </h2>
         {isAdmin && (
           <button
             onClick={onAddHighlight}
-            className="self-start sm:self-auto flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-mono transition-colors"
+            className="flex items-center gap-1.5 text-[11px] font-sans tracking-widest uppercase text-gold-500 border border-gold-500/50 hover:bg-gold-500/10 px-3 py-2 transition-colors shrink-0"
           >
-            <Plus className="w-3 h-3" />
-            <span>Add Item</span>
+            <Plus className="w-3.5 h-3.5" /> Add
           </button>
         )}
       </div>
 
-      {/* Category Pills */}
-      <div className="flex items-center gap-1.5 pb-2 mb-4 overflow-x-auto scrollbar-none">
-        {categories.map((cat) => {
-          const isActive = selectedCategory === cat;
-          return (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all ${
-                isActive
-                  ? "bg-zinc-950 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-950 font-medium"
-                  : "text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/60"
-              }`}
-            >
-              {cat}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Minimal List */}
-      <div className="space-y-2.5">
-        {filteredHighlights.map((item) => (
+      <div className="border-t border-navy-400">
+        {sorted.length === 0 && (
+          <p className="py-8 text-muted font-sans text-sm italic">No highlights yet.</p>
+        )}
+        {sorted.map((hl) => (
           <div
-            key={item.id}
-            className="group relative p-3.5 rounded-xl border border-zinc-200/70 dark:border-zinc-800/50 bg-white/20 dark:bg-zinc-900/10 hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors"
+            key={hl.id}
+            className="group flex items-start justify-between gap-4 py-5 border-b border-navy-400 hover:bg-surface/30 -mx-2 px-2 transition-colors"
           >
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-xs sm:text-sm font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                    {item.title}
-                  </h3>
+            {/* Year */}
+            <span className="font-mono text-gold-500 text-[11px] w-12 shrink-0 pt-0.5">
+              {hl.year || "—"}
+            </span>
 
-                  {item.badge && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-sans">
-                  {item.organization}
-                </div>
-
-                {item.description && (
-                  <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-                    {item.description}
-                  </p>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="font-sans text-sm text-white font-medium">{hl.title}</p>
+                {hl.badge && (
+                  <span className="font-sans text-[10px] uppercase tracking-wider text-gold-400 border border-gold-500/30 px-1.5 py-0.5 rounded-sm">
+                    {hl.badge}
+                  </span>
+                )}
+                {hl.category && (
+                  <span className="font-sans text-[10px] text-muted bg-navy-900 border border-navy-400 px-1.5 py-0.5 rounded-sm">
+                    {hl.category}
+                  </span>
                 )}
               </div>
+              {hl.organization && (
+                <p className="font-sans text-[12px] text-muted mt-1">{hl.organization}</p>
+              )}
+              {hl.description && (
+                <p className="font-sans text-xs text-body/90 mt-1.5 leading-relaxed">{hl.description}</p>
+              )}
+            </div>
 
-              {/* Year & Controls */}
-              <div className="flex items-center gap-2.5 shrink-0 text-xs font-mono text-zinc-400">
-                <span>{item.year}</span>
-
-                {item.url && item.url !== "#" && (
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-0.5 text-zinc-400 hover:text-emerald-400 transition-colors"
-                    title="View details"
+            {/* Actions */}
+            <div className="flex items-center gap-2 shrink-0 pt-0.5">
+              {hl.url && hl.url !== "#" && (
+                <a
+                  href={hl.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1.5 text-muted hover:text-gold-400 transition-colors"
+                  title="View link"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {isAdmin && (
+                <>
+                  <button
+                    onClick={() => onEditHighlight(hl)}
+                    className="p-1.5 text-muted hover:text-gold-400 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Edit milestone"
                   >
-                    <ArrowUpRight className="w-3.5 h-3.5" />
-                  </a>
-                )}
-
-                {isAdmin && (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => onEditHighlight(item)}
-                      className="p-0.5 text-zinc-400 hover:text-zinc-100 transition-colors"
-                      title="Edit Item"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => onDeleteHighlight(item)}
-                      className="p-0.5 text-zinc-400 hover:text-rose-400 transition-colors"
-                      title="Delete Item"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-              </div>
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => onDeleteHighlight(hl)}
+                    className="p-1.5 text-muted hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Delete milestone"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}

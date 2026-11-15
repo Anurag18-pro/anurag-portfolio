@@ -10,33 +10,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        surface: {
-          DEFAULT: "var(--surface)",
-          subtle: "var(--surface-subtle)",
-          muted: "var(--surface-muted)",
+        navy: {
+          950: "#090f17",
+          900: "#0f1723",
+          800: "#131f2e",
+          700: "#172335",
+          600: "#1e2f42",
+          500: "#233348",
+          400: "#2a3848",
         },
-        border: {
-          DEFAULT: "var(--border)",
-          subtle: "var(--border-subtle)",
+        gold: {
+          500: "#b39164",
+          400: "#cdb181",
+          300: "#dfc99a",
+          200: "#f0e2bb",
+          100: "#fbeecb",
         },
-        primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
-        },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
-        },
+        body: "#cad4de",
+        muted: "#909caa",
       },
       fontFamily: {
+        serif: [
+          "Fraunces",
+          "ui-serif",
+          "Georgia",
+          "serif",
+        ],
         sans: [
-          "Inter",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "Segoe UI",
-          "Roboto",
+          "Manrope",
+          "ui-sans-serif",
+          "system-ui",
           "sans-serif",
         ],
         mono: [
@@ -49,17 +52,20 @@ const config: Config = {
       },
       keyframes: {
         "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        "pulse-subtle": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.5" },
+        "fade-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
-        "fade-in": "fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-        "pulse-subtle": "pulse-subtle 2s ease-in-out infinite",
+        "fade-in": "fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        "fade-up":  "fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      borderColor: {
+        DEFAULT: "#2a3848",
       },
     },
   },

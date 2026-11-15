@@ -1,17 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Mail,
-  Linkedin,
-  Github,
-  Twitter,
-  FileText,
-  Copy,
-  Check,
-  ArrowUpRight,
-} from "lucide-react";
-import { SocialLink, Profile } from "@/types/portfolio";
+import { Mail, Linkedin, Github, FileText, ArrowUpRight, Send } from "lucide-react";
+import { Profile, SocialLink } from "@/types/portfolio";
 
 interface ConnectSectionProps {
   profile: Profile;
@@ -28,107 +19,134 @@ function SubstackIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
-export function ConnectSection({
-  profile,
-  socials,
-  onOpenResumeModal,
-  isAdmin,
-}: ConnectSectionProps) {
-  const [copied, setCopied] = useState(false);
+function getSocialIcon(icon: string, cls = "w-4 h-4") {
+  switch (icon.toLowerCase()) {
+    case "linkedin":  return <Linkedin className={cls} />;
+    case "github":    return <Github className={cls} />;
+    case "substack":  return <SubstackIcon className={cls} />;
+    case "mail":
+    case "email":     return <Mail className={cls} />;
+    default:          return <ArrowUpRight className={cls} />;
+  }
+}
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(profile.email || "anuragmishra.mail@proton.me");
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+export function ConnectSection({ profile, socials, onOpenResumeModal, isAdmin }: ConnectSectionProps) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+
+  const handleSend = () => {
+    const subject = encodeURIComponent(`Portfolio contact from ${name || "visitor"}`);
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`);
+    window.open(`mailto:anuragmishra.mail@proton.me?subject=${subject}&body=${body}`, "_blank");
   };
 
-  return (
-    <section id="connect" className="py-12 border-b border-zinc-200/80 dark:border-zinc-800/60">
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
-        <div className="max-w-md">
-          <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Connect & Collaborate
-          </h2>
-          <p className="mt-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
-            Always open to discussing full-time strategy & product management roles, analytical consulting, or interesting software ventures.
-          </p>
+  const activeSocials = socials.filter((s) => s.is_active && s.icon !== "mail");
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+  return (
+    <section id="connect" className="px-10 md:px-16 py-24 border-t border-navy-400">
+      <div className="flex items-center gap-3 mb-10">
+        <span className="font-serif italic text-gold-500/70 text-[13px]">08</span>
+        <div className="h-px w-6 bg-navy-400" />
+        <span className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted">Connect</span>
+      </div>
+
+      <h2 className="font-serif text-3xl md:text-4xl font-light text-white leading-tight mb-16">
+        {`Let's talk about what I can `}
+        <span className="font-serif italic text-gold-500">build for you</span>
+      </h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+        {/* Left: Contact info */}
+        <div className="space-y-6">
+          <div>
+            <p className="font-sans text-[11px] uppercase tracking-widest text-muted mb-2">Email</p>
             <a
               href={`mailto:${profile.email || "anuragmishra.mail@proton.me"}`}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-950 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-950 text-xs font-mono font-medium hover:opacity-90 transition-opacity"
+              className="font-sans text-gold-400 hover:text-gold-300 transition-colors text-sm"
             >
-              <Mail className="w-3.5 h-3.5" />
-              <span>{profile.email || "anuragmishra.mail@proton.me"}</span>
+              {profile.email || "anuragmishra.mail@proton.me"}
             </a>
+          </div>
 
-            <button
-              onClick={handleCopyEmail}
-              className="p-2 rounded-lg border border-zinc-200 dark:border-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors"
-              title="Copy email to clipboard"
+          {profile.location && (
+            <div>
+              <p className="font-sans text-[11px] uppercase tracking-widest text-muted mb-2">Location</p>
+              <p className="font-sans text-body text-sm">{profile.location}</p>
+            </div>
+          )}
+
+          <div>
+            <p className="font-sans text-[11px] uppercase tracking-widest text-muted mb-3">Social</p>
+            <div className="flex flex-col gap-3">
+              {activeSocials.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 text-muted hover:text-gold-400 transition-colors font-sans text-sm"
+                >
+                  {getSocialIcon(s.icon, "w-3.5 h-3.5")}
+                  <span>{s.label}</span>
+                  <ArrowUpRight className="w-3 h-3 ml-auto opacity-50" />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <a
+              href={profile.resume_url || "/resume.pdf"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-gold-500/60 text-gold-500 font-sans text-[11px] tracking-widest uppercase hover:bg-gold-500/10 transition-colors"
             >
-              {copied ? (
-                <Check className="w-3.5 h-3.5 text-emerald-500" />
-              ) : (
-                <Copy className="w-3.5 h-3.5" />
-              )}
-            </button>
+              <FileText className="w-3.5 h-3.5" />
+              Download Resume
+            </a>
           </div>
         </div>
 
-        {/* Connect Links Grid */}
-        <div className="flex flex-col gap-2 min-w-[200px] text-xs font-mono">
-          <a
-            href="https://www.linkedin.com/in/anurag-mishramba/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
+        {/* Right: Contact form */}
+        <div className="space-y-4">
+          <div>
+            <label className="block font-sans text-[11px] uppercase tracking-widest text-muted mb-2">Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block font-sans text-[11px] uppercase tracking-widest text-muted mb-2">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block font-sans text-[11px] uppercase tracking-widest text-muted mb-2">Message</label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={5}
+              placeholder="What would you like to discuss?"
+              className="w-full bg-surface border border-navy-400 rounded px-4 py-3 font-sans text-sm text-white placeholder-muted/50 focus:outline-none focus:border-gold-500/60 transition-colors resize-none"
+            />
+          </div>
+          <button
+            onClick={handleSend}
+            className="w-full flex items-center justify-center gap-2 py-3.5 bg-gold-500 text-navy-900 font-sans text-[11px] tracking-[0.2em] uppercase font-semibold hover:bg-gold-400 transition-colors"
           >
-            <span className="flex items-center gap-2">
-              <Linkedin className="w-3.5 h-3.5 text-zinc-400" />
-              <span>LinkedIn</span>
-            </span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400" />
-          </a>
-
-          <a
-            href="https://substack.com/@anuragmishraa"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <SubstackIcon className="w-3.5 h-3.5 text-zinc-400" />
-              <span>Substack</span>
-            </span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400" />
-          </a>
-
-          <a
-            href="https://github.com/Anurag18-pro"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <Github className="w-3.5 h-3.5 text-zinc-400" />
-              <span>GitHub</span>
-            </span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400" />
-          </a>
-
-          <a
-            href={profile.resume_url || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-between p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800/50 text-emerald-600 dark:text-emerald-400 font-medium transition-colors border border-emerald-500/20 bg-emerald-500/5"
-          >
-            <span className="flex items-center gap-2">
-              <FileText className="w-3.5 h-3.5" />
-              <span>View Resume (PDF)</span>
-            </span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
+            <Send className="w-3.5 h-3.5" />
+            Send Message
+          </button>
         </div>
       </div>
     </section>

@@ -1,16 +1,8 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
+import { Plus, Edit2, Trash2, ExternalLink } from "lucide-react";
 import { Project } from "@/types/portfolio";
-import {
-  ExternalLink,
-  Github,
-  Plus,
-  Edit2,
-  Trash2,
-  ArrowUpRight,
-} from "lucide-react";
 
 interface ProjectsSectionProps {
   projects: Project[];
@@ -20,6 +12,20 @@ interface ProjectsSectionProps {
   onDeleteProject: (project: Project) => void;
 }
 
+function SectionKicker({ num, label }: { num: string; label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-10">
+      <span className="font-serif italic text-gold-500/70 text-[13px]">{num}</span>
+      <div className="h-px w-6 bg-navy-400" />
+      <span className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted">{label}</span>
+    </div>
+  );
+}
+
+function padNum(n: number) {
+  return String(n).padStart(2, "0");
+}
+
 export function ProjectsSection({
   projects,
   isAdmin,
@@ -27,132 +33,100 @@ export function ProjectsSection({
   onEditProject,
   onDeleteProject,
 }: ProjectsSectionProps) {
-  const sortedProjects = [...projects].sort(
-    (a, b) => a.display_order - b.display_order
-  );
+  const sorted = [...projects].sort((a, b) => a.display_order - b.display_order);
 
   return (
-    <section id="projects" className="py-12 border-b border-zinc-200/80 dark:border-zinc-800/60">
-      {/* Section Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Selected Work & Projects
-          </h2>
-        </div>
+    <section id="projects" className="px-10 md:px-16 py-24 border-t border-navy-400">
+      <SectionKicker num="03" label="Work" />
 
+      <div className="flex items-start justify-between mb-12">
+        <h2 className="font-serif text-3xl md:text-4xl font-light text-white leading-tight">
+          Projects with a{" "}
+          <span className="font-serif italic text-gold-500">point of view</span>
+        </h2>
         {isAdmin && (
           <button
             onClick={onAddProject}
-            className="flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-mono transition-colors"
+            className="flex items-center gap-1.5 text-[11px] font-sans tracking-widest uppercase text-gold-500 border border-gold-500/50 hover:bg-gold-500/10 px-3 py-2 transition-colors shrink-0"
           >
-            <Plus className="w-3 h-3" />
-            <span>Add Project</span>
+            <Plus className="w-3.5 h-3.5" /> Add
           </button>
         )}
       </div>
 
-      {/* 2-Column Minimalist Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {sortedProjects.map((project) => (
+      <div className="border-t border-navy-400">
+        {sorted.length === 0 && (
+          <p className="py-8 text-muted font-sans text-sm italic">No projects yet.</p>
+        )}
+        {sorted.map((project, i) => (
           <div
             key={project.id}
-            className="group relative flex flex-col justify-between p-5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/70 bg-white/40 dark:bg-zinc-900/20 hover:border-zinc-400 dark:hover:border-zinc-700 transition-all duration-200"
+            className="group relative flex items-center gap-6 md:gap-10 py-6 border-b border-navy-400 hover:pl-3 transition-all duration-200 hover:border-l-2 hover:border-l-gold-500"
           >
-            <div>
-              {/* Header: Title + Year + Controls */}
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-semibold text-zinc-950 dark:text-zinc-100 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                      {project.title}
-                    </h3>
-                    {project.live_url && (
-                      <a
-                        href={project.live_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-zinc-400 hover:text-emerald-400 transition-colors"
-                        title="Open live site"
-                      >
-                        <ArrowUpRight className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                  <span className="text-[11px] font-mono text-zinc-400">
-                    {project.date}
-                  </span>
-                </div>
+            {/* Number */}
+            <span className="font-serif italic text-gold-500/60 text-lg md:text-xl w-8 shrink-0 select-none">
+              {padNum(i + 1)}
+            </span>
 
-                {/* Admin controls */}
-                {isAdmin && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={() => onEditProject(project)}
-                      className="p-1 rounded text-zinc-400 hover:text-zinc-100 transition-colors"
-                      title="Edit Project"
-                    >
-                      <Edit2 className="w-3 h-3" />
-                    </button>
-                    <button
-                      onClick={() => onDeleteProject(project)}
-                      className="p-1 rounded text-zinc-400 hover:text-rose-400 transition-colors"
-                      title="Delete Project"
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-1">
+                <h3 className="font-serif text-lg md:text-xl text-white group-hover:text-gold-100 transition-colors">
+                  {project.title}
+                </h3>
+                {project.featured && (
+                  <span className="font-sans text-[10px] tracking-widest uppercase text-gold-500 border border-gold-500/50 px-2 py-0.5">
+                    Live
+                  </span>
                 )}
               </div>
-
-              {/* Description */}
-              <p className="mt-2.5 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans">
+              <p className="font-sans text-muted text-sm leading-relaxed line-clamp-2">
                 {project.description}
               </p>
-            </div>
-
-            {/* Bottom: Tags & Links */}
-            <div className="pt-4 mt-3 border-t border-zinc-100 dark:border-zinc-800/50 flex flex-col gap-2.5">
-              {/* Tech tags */}
               {project.tags && project.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {project.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/50 px-1.5 py-0.5 rounded"
-                    >
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {project.tags.slice(0, 4).map((tag: string) => (
+                    <span key={tag} className="font-sans text-[10px] text-muted/70 bg-navy-950 border border-navy-400 px-2 py-0.5 rounded">
                       {tag}
                     </span>
                   ))}
                 </div>
               )}
+            </div>
 
-              {/* Action Links */}
-              <div className="flex items-center gap-4 text-xs font-mono">
-                {project.live_url && (
-                  <a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-zinc-800 dark:text-zinc-200 hover:text-emerald-500 dark:hover:text-emerald-400 font-medium transition-colors"
-                  >
-                    <span>Visit App</span>
-                    <ArrowUpRight className="w-3 h-3" />
-                  </a>
-                )}
-
-                {project.github_url && (
-                  <a
-                    href={project.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
-                  >
-                    <Github className="w-3 h-3" />
-                    <span>Source</span>
-                  </a>
-                )}
-              </div>
+            {/* Right: links + admin */}
+            <div className="flex items-center gap-2 shrink-0">
+              {project.live_url && (
+                <a
+                  href={project.live_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 text-muted hover:text-gold-400 transition-colors"
+                  title="Live site"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              )}
+              {/* Circular + expand button */}
+              <button
+                onClick={() => onEditProject(project)}
+                className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors ${
+                  isAdmin
+                    ? "border-gold-500/50 text-gold-500 hover:bg-gold-500/10"
+                    : "border-navy-400 text-muted hover:border-gold-500/50 hover:text-gold-500"
+                }`}
+                title={isAdmin ? "Edit project" : "View details"}
+              >
+                {isAdmin ? <Edit2 className="w-3 h-3" /> : <span className="text-sm leading-none">+</span>}
+              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => onDeleteProject(project)}
+                  className="p-1.5 text-muted hover:text-rose-400 transition-colors opacity-0 group-hover:opacity-100"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
           </div>
         ))}

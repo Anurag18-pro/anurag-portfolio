@@ -1,15 +1,25 @@
 "use client";
 
 import React from "react";
-import { Experience } from "@/types/portfolio";
 import { Plus, Edit2, Trash2 } from "lucide-react";
+import { Experience } from "@/types/portfolio";
 
 interface ExperienceSectionProps {
   experiences: Experience[];
   isAdmin: boolean;
   onAddExperience?: () => void;
   onEditExperience?: (item: Experience) => void;
-  onDeleteExperience?: (item: Experience) => void;
+  onDeleteExperience?: (id: string) => void;
+}
+
+function SectionKicker({ num, label }: { num: string; label: string }) {
+  return (
+    <div className="flex items-center gap-3 mb-10">
+      <span className="font-serif italic text-gold-500/70 text-[13px]">{num}</span>
+      <div className="h-px w-6 bg-navy-400" />
+      <span className="text-[11px] font-sans uppercase tracking-[0.2em] text-muted">{label}</span>
+    </div>
+  );
 }
 
 export function ExperienceSection({
@@ -19,108 +29,110 @@ export function ExperienceSection({
   onEditExperience,
   onDeleteExperience,
 }: ExperienceSectionProps) {
-  const sortedExperiences = [...experiences].sort(
-    (a, b) => a.display_order - b.display_order
-  );
+  const sorted = [...experiences].sort((a, b) => a.display_order - b.display_order);
 
   return (
-    <section id="experience" className="py-12 border-b border-zinc-200/80 dark:border-zinc-800/60">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-sm font-mono uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-            Professional Experience
-          </h2>
-        </div>
+    <section id="experience" className="px-10 md:px-16 py-24 border-t border-navy-400">
+      <SectionKicker num="02" label="Experience" />
 
+      <div className="flex items-start justify-between mb-12">
+        <h2 className="font-serif text-3xl md:text-4xl font-light text-white leading-tight">
+          Where I have{" "}
+          <span className="font-serif italic text-gold-500">worked</span>
+        </h2>
         {isAdmin && onAddExperience && (
           <button
             onClick={onAddExperience}
-            className="flex items-center gap-1 px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-mono transition-colors"
+            className="flex items-center gap-1.5 text-[11px] font-sans tracking-widest uppercase text-gold-500 border border-gold-500/50 hover:bg-gold-500/10 px-3 py-2 transition-colors shrink-0"
           >
-            <Plus className="w-3 h-3" />
-            <span>Add Experience</span>
+            <Plus className="w-3.5 h-3.5" /> Add
           </button>
         )}
       </div>
 
       <div className="space-y-6">
-        {sortedExperiences.map((exp) => (
-          <div
-            key={exp.id}
-            className="group relative p-4 rounded-xl border border-zinc-200/70 dark:border-zinc-800/50 bg-white/30 dark:bg-zinc-900/10 hover:border-zinc-400 dark:hover:border-zinc-700 transition-colors"
-          >
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1">
-              <div>
-                <h3 className="text-sm font-semibold text-zinc-950 dark:text-zinc-100">
-                  {exp.role}
-                </h3>
-                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-                  <span className="font-medium text-emerald-600 dark:text-emerald-400">
-                    {exp.company}
-                  </span>
-                  {exp.location && <span> · {exp.location}</span>}
+        {sorted.length === 0 && (
+          <p className="text-muted font-sans text-sm italic">No experience entries yet.</p>
+        )}
+        {sorted.map((exp) => {
+          const descList = Array.isArray(exp.description)
+            ? exp.description
+            : typeof exp.description === "string"
+            ? (exp.description as string).split("\n").filter(Boolean)
+            : [];
+
+          return (
+            <div
+              key={exp.id}
+              className="group relative bg-surface border border-navy-400 rounded-lg p-6 hover:bg-surface-2 transition-colors"
+            >
+              {isAdmin && (
+                <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {onEditExperience && (
+                    <button
+                      onClick={() => onEditExperience(exp)}
+                      className="p-1.5 text-muted hover:text-gold-400 transition-colors"
+                      title="Edit experience"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  {onDeleteExperience && (
+                    <button
+                      onClick={() => onDeleteExperience(exp.id)}
+                      className="p-1.5 text-muted hover:text-rose-400 transition-colors"
+                      title="Delete experience"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-8">
+                {/* Left: Duration + Location */}
+                <div className="w-32 shrink-0 pt-0.5">
+                  <p className="font-sans text-gold-500 text-sm font-medium leading-tight">
+                    {exp.duration || "Present"}
+                  </p>
+                  {exp.location && (
+                    <p className="font-sans text-muted text-[11px] mt-1">{exp.location}</p>
+                  )}
+                </div>
+
+                {/* Right: Role details */}
+                <div className="flex-1 min-w-0 pr-0 sm:pr-8">
+                  <h3 className="font-serif text-xl text-white mb-0.5">{exp.role}</h3>
+                  <p className="font-sans text-gold-500 text-sm font-medium mb-4">{exp.company}</p>
+
+                  {descList.length > 0 && (
+                    <ul className="space-y-2">
+                      {descList.map((line: string, li: number) => (
+                        <li key={li} className="flex gap-3 text-sm text-body font-sans leading-relaxed">
+                          <span className="text-gold-500 shrink-0 mt-0.5">—</span>
+                          <span>{line.replace(/^[-•]\s*/, "")}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {exp.skills && exp.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-4">
+                      {exp.skills.map((skill: string) => (
+                        <span
+                          key={skill}
+                          className="font-sans text-[11px] text-muted bg-navy-950 border border-navy-400 px-2 py-0.5 rounded"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-xs font-mono text-zinc-400 dark:text-zinc-500">
-                  {exp.duration}
-                </span>
-
-                {isAdmin && (
-                  <div className="flex items-center gap-1">
-                    {onEditExperience && (
-                      <button
-                        onClick={() => onEditExperience(exp)}
-                        className="p-1 rounded text-zinc-400 hover:text-zinc-100 transition-colors"
-                        title="Edit Experience"
-                      >
-                        <Edit2 className="w-3 h-3" />
-                      </button>
-                    )}
-                    {onDeleteExperience && (
-                      <button
-                        onClick={() => onDeleteExperience(exp)}
-                        className="p-1 rounded text-zinc-400 hover:text-rose-400 transition-colors"
-                        title="Delete Experience"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
             </div>
-
-            {/* Bullets */}
-            {exp.description && exp.description.length > 0 && (
-              <ul className="mt-3 space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400 font-sans">
-                {exp.description.map((bullet, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="text-zinc-400 dark:text-zinc-600 font-mono text-[10px] mt-0.5">
-                      —
-                    </span>
-                    <span className="leading-relaxed">{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Skills */}
-            {exp.skills && exp.skills.length > 0 && (
-              <div className="mt-3 pt-2.5 border-t border-zinc-100 dark:border-zinc-800/40 flex flex-wrap gap-1.5">
-                {exp.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/60 px-1.5 py-0.5 rounded"
-                  >
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

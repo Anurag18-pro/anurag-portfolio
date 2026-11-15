@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Navbar } from "@/components/Navbar";
+import { Sidebar } from "@/components/Sidebar";
+import { DotRail } from "@/components/DotRail";
 import { AdminBar } from "@/components/AdminBar";
 import { HeroSection } from "@/components/HeroSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
@@ -40,6 +41,8 @@ import {
 
 export default function Home() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeSection, setActiveSection] = useState("hero");
+
   const [profile, setProfile] = useState<Profile>(initialPortfolioData.profile);
   const [socials, setSocials] = useState<SocialLink[]>(initialPortfolioData.socials);
   const [experiences, setExperiences] = useState<Experience[]>(
@@ -90,7 +93,7 @@ export default function Home() {
 
   const { success, error: toastError, info } = useToast();
 
-  // Helper to persist offline data to localStorage when Supabase is not yet configured
+  // Helper to persist offline data to localStorage
   const saveLocal = (key: string, value: unknown) => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -99,7 +102,30 @@ export default function Home() {
     }
   };
 
-  // 1. Fetch Supabase Data (or load from localStorage when in demo mode)
+  // Scroll spy observer
+  useEffect(() => {
+    const sectionIds = ["hero", "experience", "projects", "skills", "connect"];
+    const observers = sectionIds.map((id) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            setActiveSection(id);
+          }
+        },
+        { rootMargin: "-30% 0px -40% 0px" }
+      );
+      obs.observe(el);
+      return obs;
+    });
+
+    return () => {
+      observers.forEach((o) => o?.disconnect());
+    };
+  }, []);
+
+  // Fetch Supabase Data (or load from localStorage when in demo mode)
   const fetchAllData = useCallback(async () => {
     if (!isSupabaseConfigured()) {
       try {
@@ -135,7 +161,6 @@ export default function Home() {
     try {
       const supabase = createClient();
 
-      // Check session
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -143,7 +168,6 @@ export default function Home() {
         setIsAdmin(true);
       }
 
-      // Fetch profile
       const { data: profileData } = await supabase
         .from("profile")
         .select("*")
@@ -154,7 +178,6 @@ export default function Home() {
         setProfile(profileData);
       }
 
-      // Fetch socials
       const { data: socialsData } = await supabase
         .from("socials")
         .select("*")
@@ -163,7 +186,6 @@ export default function Home() {
         setSocials(socialsData);
       }
 
-      // Fetch experiences
       const { data: experiencesData } = await supabase
         .from("experiences")
         .select("*")
@@ -172,7 +194,6 @@ export default function Home() {
         setExperiences(experiencesData);
       }
 
-      // Fetch projects
       const { data: projectsData } = await supabase
         .from("projects")
         .select("*")
@@ -181,7 +202,6 @@ export default function Home() {
         setProjects(projectsData);
       }
 
-      // Fetch education
       const { data: educationData } = await supabase
         .from("education")
         .select("*")
@@ -190,7 +210,6 @@ export default function Home() {
         setEducation(educationData);
       }
 
-      // Fetch certifications
       const { data: certsData } = await supabase
         .from("certifications")
         .select("*")
@@ -199,7 +218,6 @@ export default function Home() {
         setCertifications(certsData);
       }
 
-      // Fetch highlights
       const { data: highlightsData } = await supabase
         .from("highlights")
         .select("*")
@@ -215,7 +233,6 @@ export default function Home() {
   useEffect(() => {
     fetchAllData();
 
-    // Check if recovery link was opened
     if (typeof window !== "undefined" && window.location.hash.includes("type=recovery")) {
       setAuthModalMode("updatePassword");
       setAuthModalOpen(true);
@@ -371,6 +388,7 @@ export default function Home() {
         degree: data.degree || "",
         duration: data.duration || "",
         location: data.location || "",
+        coursework: data.coursework || "",
         highlights: data.highlights || [],
         display_order: data.display_order || education.length + 1,
       } as Education;
@@ -686,18 +704,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors">
-      {/* Sticky Minimal Navbar */}
-      <Navbar
+    <div className="min-h-screen bg-navy-950 text-white selection:bg-gold-500/20 selection:text-gold-200">
+      {/* Fixed Left Sidebar (Desktop) + Mobile Drawer */}
+      <Sidebar
+        profile={profile}
+        socials={socials}
         isAdmin={isAdmin}
-        resumeUrl={profile.resume_url}
+        activeSection={activeSection}
         onOpenAuth={() => {
           setAuthModalMode("signIn");
           setAuthModalOpen(true);
         }}
         onLogout={handleLogout}
-        onOpenProfile={() => setProfileModalOpen(true)}
-        onOpenResumeModal={() => setResumeModalOpen(true)}
       />
 
       {/* Floating Admin Banner */}
@@ -732,9 +750,15 @@ export default function Home() {
         onLogout={handleLogout}
       />
 
-      {/* Main Single-Page Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-2 pb-16">
-        {/* 1. Hero Section */}
+      {/* Fixed Right Dot Rail (Desktop) */}
+      <DotRail activeSection={activeSection} />
+
+      {/* Scrollable Main Content Area */}
+      <main className="md:pl-[360px] min-h-screen">
+        {/* Mobile top spacer */}
+        <div className="h-14 md:hidden" />
+
+        {/* 1. Hero Section (About) */}
         <HeroSection
           profile={profile}
           socials={socials}
@@ -773,7 +797,7 @@ export default function Home() {
           onDeleteProject={handleDeleteProject}
         />
 
-        {/* 4. Skills & Competencies */}
+        {/* 4. Skills & Competencies (Capability) */}
         <SkillsSection />
 
         {/* 5. Education Section */}
@@ -791,7 +815,7 @@ export default function Home() {
           onDeleteEducation={handleDeleteEducation}
         />
 
-        {/* 4. Certifications & Programs Section */}
+        {/* 6. Certifications & Programs Section */}
         <CertificationsSection
           certifications={certifications}
           isAdmin={isAdmin}
@@ -806,7 +830,7 @@ export default function Home() {
           onDeleteCertification={handleDeleteCertification}
         />
 
-        {/* 5. Competitions, Leadership & Milestones */}
+        {/* 7. Competitions, Leadership & Milestones */}
         <HighlightsSection
           highlights={highlights}
           isAdmin={isAdmin}
@@ -821,23 +845,23 @@ export default function Home() {
           onDeleteHighlight={handleDeleteHighlight}
         />
 
-        {/* 6. Connect Section */}
+        {/* 8. Connect Section */}
         <ConnectSection
           profile={profile}
           socials={socials}
           onOpenResumeModal={() => setResumeModalOpen(true)}
           isAdmin={isAdmin}
         />
-      </main>
 
-      {/* Footer */}
-      <Footer
-        isAdmin={isAdmin}
-        onOpenAuth={() => {
-          setAuthModalMode("signIn");
-          setAuthModalOpen(true);
-        }}
-      />
+        {/* Footer */}
+        <Footer
+          isAdmin={isAdmin}
+          onOpenAuth={() => {
+            setAuthModalMode("signIn");
+            setAuthModalOpen(true);
+          }}
+        />
+      </main>
 
       {/* ========================================================================= */}
       {/* MODALS */}
