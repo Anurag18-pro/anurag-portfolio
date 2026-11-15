@@ -4,7 +4,7 @@
 -- ==============================================================================
 
 -- Clear existing data (optional, useful for clean re-seeding)
-TRUNCATE TABLE public.profile, public.socials, public.projects, public.education, public.certifications, public.highlights RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.profile, public.socials, public.projects, public.education, public.certifications, public.highlights, public.experiences RESTART IDENTITY CASCADE;
 
 -- ------------------------------------------------------------------------------
 -- 1. PROFILE
@@ -228,4 +228,44 @@ INSERT INTO public.highlights (
     'Delegate',
     '#',
     7
+);
+
+-- ------------------------------------------------------------------------------
+-- 7. EXPERIENCES
+-- ------------------------------------------------------------------------------
+INSERT INTO public.experiences (
+    role,
+    company,
+    location,
+    duration,
+    description,
+    skills,
+    display_order
+) VALUES
+(
+    'Research Analyst – Investment Banking',
+    'Opulence Business Solutions Pvt. Ltd.',
+    'Ahmedabad, India',
+    'Apr 2024 – Nov 2024',
+    ARRAY[
+        'Conducted detailed secondary research across diverse industries to uncover market trends, competitor strategies, and growth drivers.',
+        'Synthesized large datasets into concise, high-impact PowerPoint presentations and Excel workbooks for senior leadership and client pitches.',
+        'Assisted with market sizing, peer group comparisons, and preliminary valuation screening across emerging sectors.',
+        'Built automated summary dashboards reducing data compilation turnaround time by 30%.'
+    ],
+    ARRAY['Market Research', 'Industry Analysis', 'Advanced Excel', 'Financial Analysis', 'Pitch Deck Preparation'],
+    1
+),
+(
+    'Marketing Intern',
+    'Gema Education Pvt. Ltd.',
+    'New Delhi, India',
+    'Jul 2023 – Oct 2023',
+    ARRAY[
+        'Supported market research initiatives identifying target audience pain points, channel effectiveness, and customer acquisition costs.',
+        'Assisted in data tracking and pipeline analytics across 5+ educational campaign funnels.',
+        'Collaborated with sales and design teams to create data-backed collateral and conversion-focused email narratives.'
+    ],
+    ARRAY['Campaign Analytics', 'Funnel Tracking', 'Market Outreach', 'Stakeholder Communication'],
+    2
 );

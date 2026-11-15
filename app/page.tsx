@@ -162,6 +162,15 @@ export default function Home() {
         setSocials(socialsData);
       }
 
+      // Fetch experiences
+      const { data: experiencesData } = await supabase
+        .from("experiences")
+        .select("*")
+        .order("display_order", { ascending: true });
+      if (experiencesData && experiencesData.length > 0) {
+        setExperiences(experiencesData);
+      }
+
       // Fetch projects
       const { data: projectsData } = await supabase
         .from("projects")

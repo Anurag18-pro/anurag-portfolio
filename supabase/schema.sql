@@ -98,6 +98,21 @@ CREATE TABLE IF NOT EXISTS public.highlights (
     created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
+-- ------------------------------------------------------------------------------
+-- 7. EXPERIENCES TABLE (Professional experience & internships)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.experiences (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    role TEXT NOT NULL,
+    company TEXT NOT NULL,
+    location TEXT,
+    duration TEXT NOT NULL,
+    description TEXT[] DEFAULT '{}'::TEXT[] NOT NULL,
+    skills TEXT[] DEFAULT '{}'::TEXT[] NOT NULL,
+    display_order INTEGER DEFAULT 0 NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
 -- ==============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ==============================================================================
@@ -109,6 +124,7 @@ ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.education ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.certifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.highlights ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.experiences ENABLE ROW LEVEL SECURITY;
 
 -- Drop existing policies if rerun
 DROP POLICY IF EXISTS "Allow public read access on profile" ON public.profile;
@@ -139,6 +155,11 @@ DROP POLICY IF EXISTS "Allow authenticated admin insert on highlights" ON public
 DROP POLICY IF EXISTS "Allow authenticated admin update on highlights" ON public.highlights;
 DROP POLICY IF EXISTS "Allow authenticated admin delete on highlights" ON public.highlights;
 
+DROP POLICY IF EXISTS "Allow public read access on experiences" ON public.experiences;
+DROP POLICY IF EXISTS "Allow authenticated admin insert on experiences" ON public.experiences;
+DROP POLICY IF EXISTS "Allow authenticated admin update on experiences" ON public.experiences;
+DROP POLICY IF EXISTS "Allow authenticated admin delete on experiences" ON public.experiences;
+
 -- Public read policies (anon & authenticated)
 CREATE POLICY "Allow public read access on profile" ON public.profile FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on socials" ON public.socials FOR SELECT USING (true);
@@ -146,6 +167,7 @@ CREATE POLICY "Allow public read access on projects" ON public.projects FOR SELE
 CREATE POLICY "Allow public read access on education" ON public.education FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on certifications" ON public.certifications FOR SELECT USING (true);
 CREATE POLICY "Allow public read access on highlights" ON public.highlights FOR SELECT USING (true);
+CREATE POLICY "Allow public read access on experiences" ON public.experiences FOR SELECT USING (true);
 
 -- Authenticated write policies (Only Admin can Insert, Update, Delete)
 CREATE POLICY "Allow authenticated admin full access on profile" 
@@ -185,6 +207,13 @@ CREATE POLICY "Allow authenticated admin update on highlights"
 ON public.highlights FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Allow authenticated admin delete on highlights" 
 ON public.highlights FOR DELETE TO authenticated USING (true);
+
+CREATE POLICY "Allow authenticated admin insert on experiences" 
+ON public.experiences FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Allow authenticated admin update on experiences" 
+ON public.experiences FOR UPDATE TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Allow authenticated admin delete on experiences" 
+ON public.experiences FOR DELETE TO authenticated USING (true);
 
 -- ==============================================================================
 -- STORAGE BUCKET CONFIGURATION (portfolio-assets)
