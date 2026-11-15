@@ -24,6 +24,7 @@ import { SocialModal } from "@/components/modals/SocialModal";
 import { ProfileModal } from "@/components/modals/ProfileModal";
 import { ResumeModal } from "@/components/modals/ResumeModal";
 import { DeleteConfirmModal } from "@/components/modals/DeleteConfirmModal";
+import { MessagesModal } from "@/components/modals/MessagesModal";
 
 // Data & Supabase
 import { initialPortfolioData } from "@/lib/initialData";
@@ -37,6 +38,7 @@ import {
   Certification,
   Highlight,
   Experience,
+  ContactMessage,
 } from "@/types/portfolio";
 
 export default function Home() {
@@ -56,10 +58,12 @@ export default function Home() {
   const [highlights, setHighlights] = useState<Highlight[]>(
     initialPortfolioData.highlights
   );
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
 
   // Modals visibility states
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<AuthMode>("signIn");
+  const [messagesModalOpen, setMessagesModalOpen] = useState(false);
   const [projectModalOpen, setProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
@@ -150,6 +154,9 @@ export default function Home() {
         const localHl = localStorage.getItem("portfolio_highlights");
         if (localHl) setHighlights(JSON.parse(localHl));
 
+        const localMsgs = localStorage.getItem("portfolio_inbox");
+        if (localMsgs) setMessages(JSON.parse(localMsgs));
+
         const demoAdmin = localStorage.getItem("portfolio_demo_admin");
         if (demoAdmin === "true") setIsAdmin(true);
       } catch {
@@ -224,6 +231,19 @@ export default function Home() {
         .order("display_order", { ascending: true });
       if (highlightsData && highlightsData.length > 0) {
         setHighlights(highlightsData);
+      }
+
+      // Fetch contact messages (if admin / authenticated)
+      try {
+        const { data: messagesData } = await supabase
+          .from("messages")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (messagesData) {
+          setMessages(messagesData);
+        }
+      } catch {
+        // Table might not exist yet or non-admin
       }
     } catch (err) {
       console.error("Supabase fetch error:", err);
@@ -703,6 +723,23 @@ export default function Home() {
     await handleSaveProfile({ resume_url: url });
   };
 
+  const handleDeleteMessage = async (id: string) => {
+    if (isSupabaseConfigured()) {
+      try {
+        const supabase = createClient();
+        await supabase.from("messages").delete().eq("id", id);
+      } catch (err) {
+        console.warn("Error deleting message from Supabase:", err);
+      }
+    }
+    setMessages((prev) => {
+      const updated = prev.filter((m) => m.id !== id);
+      saveLocal("portfolio_inbox", updated);
+      return updated;
+    });
+    success("Message Deleted", "The message was removed from your inbox.");
+  };
+
   return (
     <div className="min-h-screen bg-navy-950 text-white selection:bg-gold-500/20 selection:text-gold-200">
       {/* Fixed Left Sidebar (Desktop) + Mobile Drawer */}
@@ -723,6 +760,8 @@ export default function Home() {
         isAdmin={isAdmin}
         onOpenProfile={() => setProfileModalOpen(true)}
         onOpenResumeModal={() => setResumeModalOpen(true)}
+        onOpenMessagesModal={() => setMessagesModalOpen(true)}
+        messagesCount={messages.length}
         onOpenPasswordModal={() => {
           setAuthModalMode("updatePassword");
           setAuthModalOpen(true);
@@ -951,6 +990,14 @@ export default function Home() {
         currentResumeUrl={profile.resume_url}
         onClose={() => setResumeModalOpen(false)}
         onSave={handleSaveResume}
+      />
+
+      {/* Messages / Inbox Modal */}
+      <MessagesModal
+        isOpen={messagesModalOpen}
+        messages={messages}
+        onClose={() => setMessagesModalOpen(false)}
+        onDeleteMessage={handleDeleteMessage}
       />
 
       {/* Delete Confirmation Modal */}

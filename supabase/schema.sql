@@ -245,3 +245,33 @@ CREATE POLICY "Authenticated users can delete portfolio assets"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (bucket_id = 'portfolio-assets');
+
+
+-- ==============================================================================
+-- 8. MESSAGES / INBOX TABLE (Contact form submissions)
+-- ==============================================================================
+CREATE TABLE IF NOT EXISTS public.messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
+);
+
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Allow public insert on messages" ON public.messages;
+DROP POLICY IF EXISTS "Allow authenticated admin read on messages" ON public.messages;
+DROP POLICY IF EXISTS "Allow authenticated admin delete on messages" ON public.messages;
+
+-- Anyone can submit a message
+CREATE POLICY "Allow public insert on messages" 
+ON public.messages FOR INSERT WITH CHECK (true);
+
+-- Only authenticated admin can view received messages
+CREATE POLICY "Allow authenticated admin read on messages" 
+ON public.messages FOR SELECT TO authenticated USING (true);
+
+-- Only authenticated admin can delete messages
+CREATE POLICY "Allow authenticated admin delete on messages" 
+ON public.messages FOR DELETE TO authenticated USING (true);

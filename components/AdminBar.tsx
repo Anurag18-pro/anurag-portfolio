@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Plus, LogOut, Edit3, Database, FileText, KeyRound } from "lucide-react";
+import { Plus, LogOut, Edit3, Database, FileText, KeyRound, MessageSquare } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 
 interface AdminBarProps {
@@ -9,6 +9,8 @@ interface AdminBarProps {
   onOpenProfile: () => void;
   onOpenResumeModal: () => void;
   onOpenPasswordModal?: () => void;
+  onOpenMessagesModal?: () => void;
+  messagesCount?: number;
   onAddProject: () => void;
   onAddEducation: () => void;
   onAddCertification: () => void;
@@ -22,6 +24,8 @@ export function AdminBar({
   onOpenProfile,
   onOpenResumeModal,
   onOpenPasswordModal,
+  onOpenMessagesModal,
+  messagesCount = 0,
   onAddProject,
   onAddEducation,
   onAddCertification,
@@ -54,6 +58,22 @@ export function AdminBar({
         </div>
 
         <div className="flex items-center flex-wrap gap-1">
+          {onOpenMessagesModal && (
+            <button
+              onClick={onOpenMessagesModal}
+              className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-gold-500/20 hover:bg-gold-500/30 text-gold-300 border border-gold-500/40 transition-colors"
+              title="View received contact messages"
+            >
+              <MessageSquare className="w-3 h-3 text-gold-400" />
+              <span>Inbox</span>
+              {messagesCount > 0 && (
+                <span className="bg-gold-500 text-navy-950 text-[10px] font-bold px-1.5 rounded-full">
+                  {messagesCount}
+                </span>
+              )}
+            </button>
+          )}
+
           <button
             onClick={onOpenProfile}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-white border border-navy-400 transition-colors"
@@ -61,6 +81,7 @@ export function AdminBar({
             <Edit3 className="w-3 h-3 text-muted" />
             <span>Profile</span>
           </button>
+
           <button
             onClick={onOpenResumeModal}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-gold-400 border border-navy-400 transition-colors"
@@ -68,6 +89,7 @@ export function AdminBar({
             <FileText className="w-3 h-3" />
             <span>Resume</span>
           </button>
+
           {onOpenPasswordModal && (
             <button
               onClick={onOpenPasswordModal}
@@ -78,6 +100,7 @@ export function AdminBar({
               <span>Password</span>
             </button>
           )}
+
           <button
             onClick={onAddProject}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 border border-gold-500/30 transition-colors"
@@ -85,6 +108,7 @@ export function AdminBar({
             <Plus className="w-3 h-3" />
             <span>Project</span>
           </button>
+
           <button
             onClick={onAddEducation}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-white border border-navy-400 transition-colors hidden sm:flex"
@@ -92,6 +116,7 @@ export function AdminBar({
             <Plus className="w-3 h-3" />
             <span>Education</span>
           </button>
+
           <button
             onClick={onAddCertification}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-white border border-navy-400 transition-colors hidden sm:flex"
@@ -99,6 +124,7 @@ export function AdminBar({
             <Plus className="w-3 h-3" />
             <span>Cert</span>
           </button>
+
           <button
             onClick={onAddHighlight}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-white border border-navy-400 transition-colors hidden sm:flex"
@@ -106,6 +132,7 @@ export function AdminBar({
             <Plus className="w-3 h-3" />
             <span>Milestone</span>
           </button>
+
           <button
             onClick={onAddSocial}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-navy-700 hover:bg-navy-600 text-white border border-navy-400 transition-colors hidden sm:flex"
@@ -113,6 +140,7 @@ export function AdminBar({
             <Plus className="w-3 h-3" />
             <span>Social</span>
           </button>
+
           <button
             onClick={onLogout}
             className="flex items-center gap-1 px-2 py-0.5 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-colors ml-1"
